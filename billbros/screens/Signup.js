@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text } from 'react-native';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useNavigation } from '@react-navigation/native';
 import { auth } from 'firebase/auth';
 
 export default function Signup() {
+    const navigation = useNavigation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState("");
@@ -12,37 +14,39 @@ export default function Signup() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState('');
 
-    const submitLoginForm = () => {
-        if (email.length !== 0 && password.length !== 0) {
-            alert("Credentials entered");
-            console.log("Email----------------->", email);
-            console.log("Password------------->", password);
-
-            signInWithEmailAndPassword(auth, email, password)
-                .then(() => console.log("login Successfull"))
-                .catch((err) => alert("login failed", err.message))
-        } else {
-            setError("Invalid Email or password");
+    const validateInputs = () => {
+        if (!name || !number || !email || !password || !confirmPassword) {
+            setError("All fields are required");
+            return false;
+        } else if (password !== confirmPassword) {
+            setError("Password and Confirm Password must match");
+            return false;
+        } else if (number.length !== 11) {
+            setError("Phone number must contain 11 digits");
+            return false;
         }
+        return true;
     }
 
+    const handleSignUp = () => {
+        if (validateInputs()) {
+            createUserWithEmailAndPassword(auth, email, password)
+                .then(() => {
+                    Alert.alert("Success", "Account created successfully");
+                    navigation.navigate('Login');
+                })
+                .catch((error) => {e
+                    setError(error.message);
+                });
+        }
+    }
+    
     return (
         <SafeAreaView>
-            <View className="bg-violet-100 h-40">
-                <View className="flex flex-row">
-                    <View className="basis-1/4">
-                        <Text className="text-black font-black ml-5 mt-5">X</Text>
-                    </View>
-                    <View>
-                        <TouchableOpacity className="mt-5 ml-20">
-                            <Text className="text-blue-500 mx-4">Forgot your credentials?</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </View>
+           
             <View className="justify-center items-center m-12">
-                <Text className="text-2xl font-bold mb-2">Let's Sign You in!</Text>
-                <Text className="text-gray-500 font-bold mb-6">Welcome Back To BillBros</Text>
+                <Text className="text-2xl font-bold mb-2">Let's Sign You Up!</Text>
+                <Text className="text-gray-500 font-bold mb-6">Welcome To BillBros</Text>
                 <View className="w-full max-w-md ">
 
                     <TextInput
@@ -65,26 +69,30 @@ export default function Signup() {
                     />
                     <TextInput
                         className="border-2 border-gray-300 p-2 mb-4 rounded-lg"
-                        placeholder="Enter Email"
-                        value={confirmPassword}
-                        onChangeText={text => setConfirmPassword(text)}
-                    />
-                    <TextInput
-                        className="border-2 border-gray-300 p-2 mb-4 rounded-lg"
                         placeholder="Enter Password"
                         value={password}
                         onChangeText={text => setPassword(text)}
                         secureTextEntry
                     />
+                    <TextInput
+                        className="border-2 border-gray-300 p-2 mb-4 rounded-lg"
+                        placeholder="Enter Confirm Password"
+                        value={confirmPassword}
+                        onChangeText={text => setConfirmPassword(text)}
+                        secureTextEntry
+                    />
                     {error.length > 0 && <Text className="text-red-500 mb-2">{error}</Text>}
                     <TouchableOpacity
                         className="bg-blue-500 p-2 rounded-lg"
-                        onPress={submitLoginForm}
+                        onPress={handleSignUp}
                     >
-                        <Text className="text-white text-center">Sign In</Text>
+                        <Text className="text-white text-center">Sign Up</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity className="mt-4">
-                        <Text className="text-blue-500 text-center">Create an account</Text>
+                    <TouchableOpacity
+                        className="mt-4"
+                        onPress={() => navigation.navigate('Login')}
+                    >
+                        <Text className="text-blue-500 text-center">Already have an account? Sign In</Text>
                     </TouchableOpacity>
                 </View>
             </View>

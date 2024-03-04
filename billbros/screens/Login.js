@@ -3,8 +3,10 @@ import { View, TextInput, TouchableOpacity, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from 'firebase/auth';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Login() {
+    const navigation = useNavigation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -25,7 +27,7 @@ export default function Login() {
 
     return (
         <SafeAreaView>
-            <View className="bg-violet-100 h-40">
+            <View className="bg-violet-100 h-30">
                 <View className="flex flex-row">
                     <View className="basis-1/4">
                         <Text className="text-black font-black ml-5 mt-5">X</Text>
@@ -61,7 +63,10 @@ export default function Login() {
                     >
                         <Text className="text-white text-center">Sign In</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity className="mt-4">
+                    <TouchableOpacity
+                        className="mt-4"
+                        onPress={() => navigation.navigate('Signup')}
+                    >
                         <Text className="text-blue-500 text-center">Create an account</Text>
                     </TouchableOpacity>
                 </View>
